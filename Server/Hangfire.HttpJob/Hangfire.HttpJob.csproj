@@ -11,6 +11,7 @@
     <FileVersion>3.7.0.0</FileVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
