@@ -151,7 +151,8 @@ namespace MysqlHangfire
                 AppPath = "#",
                 IgnoreAntiforgeryToken = true,
                 DisplayStorageConnectionString = hangfireSettings.DisplayStorageConnectionString,
-                IsReadOnlyFunc = Context => false
+                IsReadOnlyFunc = Context => false,
+                PrefixPath = "/hangfire",
             };
 
             if (hangfireSettings.HttpAuthInfo.IsOpenLogin && hangfireSettings.HttpAuthInfo.Users.Any())
