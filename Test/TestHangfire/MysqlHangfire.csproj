@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="NLog.Config" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="appsettings.json" />
   </ItemGroup>
 
@@ -32,12 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="NLog.Config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Server\Hangfire.HttpJob\Hangfire.HttpJob.csproj" />
   </ItemGroup>
 
@@ -50,6 +40,12 @@
   <ItemGroup>
     <None Update="Dockerfile">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="hangfire\hangfire_global.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="hangfire\NLog.Config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

@@ -69,6 +69,7 @@ namespace MysqlHangfire
                 config.ShutdownTimeout = TimeSpan.FromMinutes(30); //超时时间
                 config.Queues = queues.ToArray(); //队列
                 config.WorkerCount = workerCount;
+                config.HeartbeatInterval = TimeSpan.FromMinutes(5);
             });
 
             return services;
@@ -110,7 +111,7 @@ namespace MysqlHangfire
                 PrepareSchemaIfNecessary = true,
                 DashboardJobListLimit = 50000,
                 TransactionTimeout = TimeSpan.FromMinutes(1),
-                TablesPrefix = hangfireSettings.TablePrefix
+                TablesPrefix = hangfireSettings.TablePrefix,
             };
 
             globalConfiguration
