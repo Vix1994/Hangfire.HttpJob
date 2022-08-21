@@ -57,10 +57,11 @@ namespace RedisHangfire
 
                 config.ServerName = settings.ServerName;
                 config.ServerTimeout = TimeSpan.FromMinutes(4);
-                config.SchedulePollingInterval = TimeSpan.FromSeconds(1);//秒级任务需要配置短点，一般任务可以配置默认时间，默认15秒
+                config.SchedulePollingInterval = TimeSpan.FromSeconds(10);//秒级任务需要配置短点，一般任务可以配置默认时间，默认15秒
                 config.ShutdownTimeout = TimeSpan.FromMinutes(30); //超时时间
                 config.Queues = queues.ToArray(); //队列
                 config.WorkerCount = workerCount;
+                config.HeartbeatInterval = TimeSpan.FromMinutes(5);
             });
 
             return services;
@@ -98,7 +99,7 @@ namespace RedisHangfire
                 Prefix = hangfireSettings.TablePrefix,
                 SucceededListSize = 9999,
                 DeletedListSize = 4999,
-                UseTransactions = false
+                UseTransactions = false,
             };
             var redis = ConnectionMultiplexer.Connect(sqlConnectStr);
             globalConfiguration.UseRedisStorage(redis, options)
@@ -138,7 +139,9 @@ namespace RedisHangfire
                 IgnoreAntiforgeryToken = true,
                 DisplayStorageConnectionString = hangfireSettings.DisplayStorageConnectionString,
                 IsReadOnlyFunc = Context => false,
+#if !DEBUG
                 PrefixPath = "/hangfire",
+#endif
             };
 
             if (hangfireSettings.HttpAuthInfo.IsOpenLogin && hangfireSettings.HttpAuthInfo.Users.Any())
@@ -175,7 +178,7 @@ namespace RedisHangfire
                     IgnoreAntiforgeryToken = true,
                     AppPath = hangfireSettings.StartUpPath, //返回时跳转的地址
                     DisplayStorageConnectionString = false, //是否显示数据库连接信息
-                    IsReadOnlyFunc = Context => true
+                    IsReadOnlyFunc = Context => true,
                 });
 
             return app;
