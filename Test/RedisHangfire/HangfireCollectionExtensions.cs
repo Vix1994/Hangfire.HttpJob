@@ -139,9 +139,7 @@ namespace RedisHangfire
                 IgnoreAntiforgeryToken = true,
                 DisplayStorageConnectionString = hangfireSettings.DisplayStorageConnectionString,
                 IsReadOnlyFunc = Context => false,
-#if !DEBUG
                 PrefixPath = "/hangfire",
-#endif
             };
 
             if (hangfireSettings.HttpAuthInfo.IsOpenLogin && hangfireSettings.HttpAuthInfo.Users.Any())
