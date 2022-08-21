@@ -84,6 +84,11 @@ namespace Hangfire.HttpJob
         /// </summary>
         public Func<HttpJobItem, bool> AddHttpJobFilter;
 
+        /// <summary>
+        /// 存在多级路由
+        /// </summary>
+        public string RoutePrefix { get; set; }
+
 
         #region 按钮名称和标题等自定义展示名称
 

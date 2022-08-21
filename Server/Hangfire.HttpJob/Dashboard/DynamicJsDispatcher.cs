@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Hangfire.HttpJob.Support;
 using Hangfire.Tags.Storage;
+using System.IO;
 
 namespace Hangfire.HttpJob.Dashboard
 {
@@ -20,6 +21,8 @@ namespace Hangfire.HttpJob.Dashboard
             var builder = new StringBuilder();
             string DefaultTimeZone = CodingUtil.GetGlobalAppsetting<string>("DefaultTimeZone",null);
             bool EnableDingTalk = CodingUtil.GetGlobalAppsetting<bool>("EnableDingTalk", false);
+
+            var routePath = _options.RoutePrefix + context.Request.PathBase;
 
             builder.Append(@"(function (hangFire) {")
                   .Append("hangFire.httpjobConfig =  {};")
@@ -52,32 +55,32 @@ namespace Hangfire.HttpJob.Dashboard
                   .AppendFormat("hangFire.httpjobConfig.SubmitButtonName = '{0}';", _options.SubmitButtonName)
                   .AppendFormat("hangFire.httpjobConfig.GlobalHttpTimeOut = {0};", _options.GlobalHttpTimeOut)
                   .AppendFormat("hangFire.httpjobConfig.GlobalSetButtonName = '{0}';", _options.GobalSettingButtonName)
-                  .AppendFormat("hangFire.httpjobConfig.AddHttpJobUrl = '{0}/httpjob?op=backgroundjob';", context.Request.PathBase)
-                  .AppendFormat("hangFire.httpjobConfig.AddCronUrl = '{0}/cron';", context.Request.PathBase)
-                  .AppendFormat("hangFire.httpjobConfig.AppUrl = '{0}';", context.Request.PathBase)
-                  .AppendFormat("hangFire.httpjobConfig.AddRecurringJobUrl = '{0}/httpjob?op=recurringjob';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.GetRecurringJobUrl = '{0}/httpjob?op=GetRecurringJob';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.EditRecurringJobUrl = '{0}/httpjob?op=EditRecurringJob';", context.Request.PathBase)
-				   .AppendFormat("hangFire.httpjobConfig.ImportJobsUrl = '{0}/httpjob?op=ImportJobs';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.ExportJobsUrl = '{0}/httpjob?op=ExportJobs';", context.Request.PathBase)
+                  .AppendFormat("hangFire.httpjobConfig.AddHttpJobUrl = '{0}/httpjob?op=backgroundjob';", routePath)
+                  .AppendFormat("hangFire.httpjobConfig.AddCronUrl = '{0}/cron';", routePath)
+                  .AppendFormat("hangFire.httpjobConfig.AppUrl = '{0}';", routePath)
+                  .AppendFormat("hangFire.httpjobConfig.AddRecurringJobUrl = '{0}/httpjob?op=recurringjob';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.GetRecurringJobUrl = '{0}/httpjob?op=GetRecurringJob';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.EditRecurringJobUrl = '{0}/httpjob?op=EditRecurringJob';", routePath)
+				   .AppendFormat("hangFire.httpjobConfig.ImportJobsUrl = '{0}/httpjob?op=ImportJobs';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.ExportJobsUrl = '{0}/httpjob?op=ExportJobs';", routePath)
 
-                   .AppendFormat("hangFire.httpjobConfig.GetGlobalSettingUrl = '{0}/httpjob?op=GetGlobalSetting';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.PostGlobalSettingUrl = '{0}/httpjob?op=SaveGlobalSetting';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.PauseJobUrl = '{0}/httpjob?op=PauseJob';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.DeleteJobUrl = '{0}/httpjob?op=deljob';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.AgentJobDeatilButtonUrl = '{0}/httpjob?op=getbackgroundjobdetail';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.StartBackgroudJobUrl = '{0}/httpjob?op=StartBackgroundJob';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.StopBackgroudJobUrl = '{0}/httpjob?op=StopBackgroundJob';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.GetJobListUrl = '{0}/httpjob?op=GetJobList';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.GetAgentServerListUrl = '{0}/httpjob?op=getagentserver';", context.Request.PathBase)
-                   .AppendFormat("hangFire.httpjobConfig.IsReadonly = '{0}';", context.Request.PathBase.Contains("read"))
+                   .AppendFormat("hangFire.httpjobConfig.GetGlobalSettingUrl = '{0}/httpjob?op=GetGlobalSetting';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.PostGlobalSettingUrl = '{0}/httpjob?op=SaveGlobalSetting';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.PauseJobUrl = '{0}/httpjob?op=PauseJob';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.DeleteJobUrl = '{0}/httpjob?op=deljob';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.AgentJobDeatilButtonUrl = '{0}/httpjob?op=getbackgroundjobdetail';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.StartBackgroudJobUrl = '{0}/httpjob?op=StartBackgroundJob';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.StopBackgroudJobUrl = '{0}/httpjob?op=StopBackgroundJob';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.GetJobListUrl = '{0}/httpjob?op=GetJobList';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.GetAgentServerListUrl = '{0}/httpjob?op=getagentserver';", routePath)
+                   .AppendFormat("hangFire.httpjobConfig.IsReadonly = '{0}';", routePath.Contains("read"))
                    .AppendFormat("hangFire.httpjobConfig.ShowTag = '{0}';", CodingUtil.IsTagServiceInstalled)
-                  .AppendFormat("hangFire.httpjobConfig.NeedAddNomalHttpJobButton = location.href.indexOf('{0}') >= 0;", context.Request.PathBase.Contains("read") ? "only-read" : _options.ScheduledEndPath)
-                  .AppendFormat("hangFire.httpjobConfig.NeedAddRecurringHttpJobButton = location.href.indexOf('/enqueued/')==-1 && location.href.indexOf('{0}') >= 0;", context.Request.PathBase.Contains("read") ? "only-read" : _options.RecurringEndPath)
-                  .AppendFormat("hangFire.httpjobConfig.NeedAddCronButton = location.href.indexOf('/enqueued/')==-1 && location.href.indexOf('{0}') >= 0;;", context.Request.PathBase.Contains("read") ? "only-read" : _options.RecurringEndPath)
-                  .AppendFormat("hangFire.httpjobConfig.NeedEditRecurringJobButton =location.href.indexOf('/enqueued/')==-1 &&  location.href.indexOf('{0}') >= 0;", context.Request.PathBase.Contains("read") ? "only-read" : _options.RecurringEndPath)
-                  .AppendFormat("hangFire.httpjobConfig.NeedExportJobsButton = location.href.indexOf('/enqueued/')==-1 && location.href.indexOf('{0}') >= 0;", context.Request.PathBase.Contains("read") ? "only-read" : _options.RecurringEndPath)
-                  .AppendFormat("hangFire.httpjobConfig.NeedImportJobsButton = location.href.indexOf('/enqueued/')==-1 && location.href.indexOf('{0}') >= 0;", context.Request.PathBase.Contains("read") ? "only-read" : _options.RecurringEndPath)
+                  .AppendFormat("hangFire.httpjobConfig.NeedAddNomalHttpJobButton = location.href.indexOf('{0}') >= 0;", routePath.Contains("read") ? "only-read" : _options.ScheduledEndPath)
+                  .AppendFormat("hangFire.httpjobConfig.NeedAddRecurringHttpJobButton = location.href.indexOf('/enqueued/')==-1 && location.href.indexOf('{0}') >= 0;", routePath.Contains("read") ? "only-read" : _options.RecurringEndPath)
+                  .AppendFormat("hangFire.httpjobConfig.NeedAddCronButton = location.href.indexOf('/enqueued/')==-1 && location.href.indexOf('{0}') >= 0;;", routePath.Contains("read") ? "only-read" : _options.RecurringEndPath)
+                  .AppendFormat("hangFire.httpjobConfig.NeedEditRecurringJobButton =location.href.indexOf('/enqueued/')==-1 &&  location.href.indexOf('{0}') >= 0;", routePath.Contains("read") ? "only-read" : _options.RecurringEndPath)
+                  .AppendFormat("hangFire.httpjobConfig.NeedExportJobsButton = location.href.indexOf('/enqueued/')==-1 && location.href.indexOf('{0}') >= 0;", routePath.Contains("read") ? "only-read" : _options.RecurringEndPath)
+                  .AppendFormat("hangFire.httpjobConfig.NeedImportJobsButton = location.href.indexOf('/enqueued/')==-1 && location.href.indexOf('{0}') >= 0;", routePath.Contains("read") ? "only-read" : _options.RecurringEndPath)
                   .Append("})(window.Hangfire = window.Hangfire || {});")
                   .AppendLine();
 
